@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Manager 2023</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Event Manager 2023</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_home.do_home') }}"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_events.do_event_list') }}"><i class="fa fa-light fa-glass-martini"></i> Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_meetings.do_meeting_list') }}"><i class="fas fa-users"></i> Meetings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_stakeholders.do_stakeholder_list') }}"><i class="fas fa-user-tie"></i> Stakeholders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_tasks.do_task_list') }}"><i class="far fa-check-square"></i> To do list</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_calendar.do_calendar') }}"><i class="far fa-calendar-alt"></i> Agenda</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" 
+              {% if current_user and current_user.is_authenticated %}
+              href="{{ url_for('auth.logout') }}"> Logout <i class="bi bi-box-arrow-right"></i>
+            {% else %}
+              href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i> Login
+            {% endif %}
+            </a> 
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    {% block content %}
+<div class="container">
+  <h1 class="text-center mb-5">Add meeting</h1>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form method="POST" action="{{ url_for('bp_meetings.do_meeting') }}">
+  <div class="form-group">
+    <label for="subject">Subject:</label>
+    <textarea name="subject" id="subject" class="form-control" placeholder="Add a new meeting"></textarea>
+  </div>
+  <div class="form-group">
+    <label for="description">Description:</label>
+    <textarea name="description" id="description" class="form-control" rows="3" placeholder="Add a description"></textarea>
+        </div>
+  <div class="form-group">
+      <label for="location">Location:</label>
+      <textarea name="location" id="location" class="form-control" rows="3" placeholder="Add location"></textarea>
+  </div>
+  <div class="form-group">
+      <label for="date">Date:</label>
+      <input type="date" name="date" id="date" class="form-control">
+        </div>
+  <div class="form-group">
+      <label for="time">Time:</label>
+      <input type="time" name="time" id="time" class="form-control">
+        </div>
+<div align="center">
+    <button type="submit" class="btn btn-primary">Add meeting</button>
+</div>
+</form>
+</div>
+</div>
+{% block javascript %}
+    <script type="text/javascript">
+        const checkedMeetingIds = "{{ checked_meeting_ids }}".split(',');
+        
+        function deleteMeeting(meetingId) {
+            fetch("/delete-meeting", {
+                method: "POST",
+                body: JSON.stringify({ meetingId: meetingId }),
+            }).then((_res) => {
+                window.location.href = "/meeting-list";
+            });
+        }
+        
+        document.querySelector('form').addMeetingListener('submit', function(meeting) {
+            const checkedCheckboxes = document.querySelectorAll('input[name="meeting_ids[]"]:checked');
+            const checkedIds = Array.from(checkedCheckboxes).map((checkbox) => checkbox.value);
+            document.querySelector('#checked_meeting_ids').value = checkedIds.join(',');
+        });
+        
+        checkedMeetingIds.forEach((meetingId) => {
+            const checkbox = document.querySelector(`input[value="${meetingId}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    </script>
+{% endblock %}
+{% endblock %}

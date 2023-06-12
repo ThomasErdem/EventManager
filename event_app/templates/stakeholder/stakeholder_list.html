@@ -1,0 +1,182 @@
+{% extends "base_layout.html" %}
+
+{% block title_block %}Stakeholders{% endblock %}
+
+{% block content_block %}
+    {% block content %}
+
+        {% if current_user and current_user.is_authenticated %}
+        <div class="row">
+            <div class="col">
+                <a href="{{ url_for('bp_stakeholders.do_stakeholder') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle-fill"></i> Add stakeholder
+                </a>
+            </div>
+        </div>
+        <div class="tinyspace"></div>
+
+{% endif %}
+        <div class="container my-5">
+        <h1 align="center">STAKEHOLDERS</h1>
+        <div class="d-flex justify-content-center">
+            <img src="{{ url_for('static', filename='images/stakeholder.png') }}" class="img-fluid" width="50%" alt="Stakeholder Image">
+        </div>
+
+
+        {% for message in flash_messages %}
+            <div class="alert alert-{{ message[1] }}" role="alert">
+                {{ message[0] }}
+            </div>
+        {% endfor %}
+        <div style="margin-top: 100px;">
+            <form method="POST">
+                <div class="input-group mb-3">
+                    <input type="text" class="form-control" placeholder="Search" id="searchInput" onkeyup="searchTable()">
+                    <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()"><i class="bi bi-x"></i></button>
+                </div>
+                <table class="table" id="stakeholderTable">
+                    <thead>
+                        <tr>
+                            <th scope="col" onclick="sortTable(0)">
+                                Name <i class="fas fa-sort"></i>
+                            </th>
+                            <th scope="col" onclick="sortTable(1)">
+                                Email <i class="fas fa-sort"></i>
+                            </th>
+                            <th scope="col" onclick="sortTable(2)">
+                                Phone number <i class="fas fa-sort"></i>
+                            </th>
+                            <th scope="col" onclick="sortTable(3)">
+                                Type <i class="fas fa-sort"></i>
+                            </th>
+                            <th scope="col" onclick="sortTable(4)">
+                                Company <i class="fas fa-sort"></i>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="stakeholders">
+                        {% for stakeholder in stakeholders %}
+                            <tr>
+                                <td>
+                                    <input type="hidden" name="stakeholder_ids[]" value="{{ stakeholderid }}">
+                                    {{ stakeholder.name }}
+                                </td>
+                                <td>{{ stakeholder.email }}</td>
+                                <td>{{ stakeholder.phone_number }}</td>
+                                <td>{{ stakeholder.type }}</td>
+                                <td>{{ stakeholder.company }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-danger" onClick="deleteStakeholder({{ stakeholder.id }})">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                    <a href="{{ url_for('bp_stakeholders.update_stakeholder', stakeholder_id=stakeholder.id) }}" class="btn btn-success">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>  
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+<head>
+    <script type="<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+    </head>
+    
+    {% block javascript %}
+    <script type="text/javascript">
+        const checkedStakeholderIds = "{{ checked_stakeholder_ids }}".split(',');
+    
+        function deleteStakeholder(stakeholderId) {
+            fetch("/delete-stakeholder", {
+                method: "POST",
+                body: JSON.stringify({ stakeholderId: stakeholderId }),
+            }).then((_res) => {
+                window.location.href = "/stakeholder-list";
+            });
+        }
+    
+        document.querySelector('form').addEventListener('submit', function(stakeholder) {
+            const checkedCheckboxes = document.querySelectorAll('input[name="stakeholder_ids[]"]:checked');
+            const checkedIds = Array.from(checkedCheckboxes).map((checkbox) => checkbox.value);
+            document.querySelector('#checked_stakeholder_ids').value = checkedIds.join(',');
+        });
+    
+        checkedStakeholderIds.forEach((stakeholderId) => {
+            const checkbox = document.querySelector(`input[value="${stakeholderId}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    
+        function sortTable(n) {
+            var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+            table = document.getElementById("stakeholderTable");
+            switching = true;
+            dir = "asc";
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    if (dir == "asc") {
+                        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir == "desc") {
+                        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                    switchcount++;
+                } else {
+                    if (switchcount == 0 && dir == "asc") {
+                        dir = "desc";
+                        switching = true;
+                    }
+                }
+            }
+        }
+    
+        function searchTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("stakeholderTable");
+            tr = table.getElementsByTagName("tr");
+    
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    
+        function clearSearch() {
+            var input = document.getElementById("searchInput");
+            input.value = "";
+            searchTable();
+        }
+    </script>
+    {% endblock %}
+    {% endblock %}
+    

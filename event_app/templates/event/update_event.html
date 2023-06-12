@@ -1,0 +1,54 @@
+{% extends "base_layout.html" %}
+
+{% block title_block %}Edit Event{% endblock %}
+
+{% block content_block %}
+    {% block content %}
+        <div class="container">
+            <h1>Edit Event</h1>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ event.name }}">
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description">{{ event.description }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" value="{{ event.location }}">
+                </div>
+                <div class="form-group">
+                    <label for="budget">Budget (&euro;)</label>
+                    <input type="valuta" name="budget" id="budget" class="form-control" value="{{ event.budget }}">
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" value="{{ event.date.strftime('%Y-%m-%d') }}">
+                </div>
+                <div class="form-group">
+                    <label for="program">Program:</label>
+                    <textarea name="program" id="program" class="form-control" rows="3">{{ event.program }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="genre">Category</label>
+                    <select name="category" id="genre" class="form-control">
+                        <option value="">-- Select a category --</option>
+                        <option value="Conference" {% if event.category == 'Conference' %}selected{% endif %}>Conference</option>
+                        <option value="Seminar" {% if event.category == 'Seminar' %}selected{% endif %}>Seminar</option>
+                        <option value="Workshop" {% if event.category == 'Workshop' %}selected{% endif %}>Workshop</option>
+                        <option value="Festival" {% if event.category == 'Festival' %}selected{% endif %}>Festival</option>
+                        <option value="Networking event" {% if event.category == 'Networking event' %}selected{% endif %}>Networking event</option>
+                        <option value="Charity event" {% if event.category == 'Charity event' %}selected{% endif %}>Charity event</option>
+                        <option value="Wedding" {% if event.category == 'Wedding' %}selected{% endif %}>Wedding</option>
+                        <option value="Trade show" {% if event.category == 'Trade show' %}selected{% endif %}>Trade show</option>
+                        <option value="Other" {% if event.category == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                <div align="center">
+                <button type="submit" class="btn btn-primary">Update event</button>
+            </form>
+        </div>
+    {% endblock %}
+{% endblock %}

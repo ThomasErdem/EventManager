@@ -1,0 +1,53 @@
+{% extends "base_layout.html" %}
+
+{% block title_block %}Edit task{% endblock %}
+
+{% block content_block %}
+    {% block content %}
+        <div class="container">
+            <h1>Edit task</h1>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="data">Task</label>
+                    <input type="text" class="form-control" id="data" name="data" value="{{ task.data }}">
+                </div>
+                <div class="form-group">
+                    <label for="note">Note</label>
+                    <textarea class="form-control" id="note" name="note">{{ task.note }}</textarea>
+                </div>
+                <div class="form-group">
+                    <label for="priority">Priority level:</label>
+                    <select name="priority" id="priority" class="form-control" value="{{ task.priority}}">
+                      <option value="">-- Select a priority level --</option>
+                      <option value="Urgent">Urgent</option>
+                      <option value="High">High</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Low">Low</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="date">Current Date</label>
+                    <input type="text" class="form-control" id="date" name="date" value="{{ task.date }}">
+                </div>
+                <div class="form-group">
+                    <label for="deadline">Deadline</label>
+                    <input type="date" class="form-control" id="deadline" name="deadline" value="{{ task.deadline.strftime('%Y-%m-%d') }}">
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select name="status" id="status" class="form-control">
+                        <option value="">-- Select a status level --</option>
+                        <option value="Not started" {% if task.status == 'Not started' %}selected{% endif %}>Not started</option>
+                        <option value="In progress" {% if task.status == 'In progress' %}selected{% endif %}>In progress</option>
+                        <option value="Completed" {% if task.status == 'Completed' %}selected{% endif %}>Completed</option>
+                        <option value="On hold" {% if task.status == 'On hold' %}selected{% endif %}>On hold</option>
+                        <option value="Cancelled" {% if task.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                    </select>
+                </div>
+                <div align="center">
+                    <button type="submit" class="btn btn-primary">Update task</button>
+                </div>
+            </form>
+        </div>
+    {% endblock %}
+{% endblock %}

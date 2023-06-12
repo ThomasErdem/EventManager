@@ -1,0 +1,185 @@
+{% extends "base_layout.html" %}
+
+{% block title_block %}Events{% endblock %}
+
+{% block content_block %}
+    {% block content %}
+        {% if current_user and current_user.is_authenticated %}
+            <div class="row">
+                <div class="col">
+                    <a href="{{ url_for('bp_events.do_event') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle-fill"></i> Add event
+                    </a>
+                </div>
+            </div>
+            <div class="tinyspace"></div>
+        {% endif %}
+        
+        <div class="container my-5">
+            <h1 align="center">EVENTS</h1>
+            <div class="d-flex justify-content-center">
+                <img src="{{ url_for('static', filename='images/event.png') }}" class="img-fluid" width="50%" alt="Event Image">
+            </div>
+            
+            {% for message in flash_messages %}
+                <div class="alert alert-{{ message[1] }}" role="alert">
+                    {{ message[0] }}
+                </div>
+            {% endfor %}
+            <div style="margin-top: 100px;">
+                <form method="POST">
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" placeholder="Search name" id="searchInput" onkeyup="searchTable()">
+                        <button class="btn btn-outline-secondary" type="button" onclick="clearSearch()"><i class="bi bi-x"></i></button>
+                        </div>
+                        <table class="table" id="eventTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col" onclick="sortTable(0)">
+                                        Name <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th scope="col" onclick="sortTable(1)">
+                                        Description <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th scope="col" onclick="sortTable(2)">
+                                        Location <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th scope="col" onclick="sortTable(3)">
+                                        Budget <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th scope="col" onclick="sortTable(4)">
+                                        Date <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th scope="col" onclick="sortTable(5)">
+                                        Program <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th scope="col" onclick="sortTable(6)">
+                                        Category <i class="fas fa-sort"></i>
+                                    </th>
+                                    <th scope="col">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="events">
+                                {% for event in events %}
+                                    <tr>
+                                        <td>
+                                            <input type="hidden" name="event_ids[]" value="{{ eventid }}">
+                                            {{ event.name }}
+                                        </td>
+                                        <td>{{ event.description }}</td>
+                                        <td>{{ event.location }}</td>
+                                        <td>{{ event.budget }}</td>
+                                        <td>{{ event.date.strftime('%d/%m/%Y') }}</td>
+                                        <td>{{ event.program }}</td>
+                                        <td>{{ event.category }}</td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onClick="deleteEvent({{ event.id }})">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                            <a href="{{ url_for('bp_events.update_event', event_id=event.id) }}" class="btn btn-success">
+                                                <i class="bi bi-pencil-fill"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+    
+    {% block javascript %}
+        <script type="text/javascript">
+            const checkedEventIds = "{{ checked_event_ids }}".split(',');
+            
+            function deleteEvent(eventId) {
+                fetch("/delete-event", {
+                    method: "POST",
+                    body: JSON.stringify({ eventId: eventId }),
+                }).then((_res) => {
+                    window.location.href = "/event-list";
+                });
+            }
+            
+            document.querySelector('form').addEventListener('submit', function(event) {
+                const checkedCheckboxes = document.querySelectorAll('input[name="event_ids[]"]:checked');
+                const checkedIds = Array.from(checkedCheckboxes).map((checkbox) => checkbox.value);
+                document.querySelector('#checked_event_ids').value = checkedIds.join(',');
+            });
+            
+            checkedEventIds.forEach((eventId) => {
+                const checkbox = document.querySelector(`input[value="${eventId}"]`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                }
+            });
+            
+            function sortTable(n) {
+                var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+                table = document.getElementById("eventTable");
+                switching = true;
+                dir = "asc";
+                while (switching) {
+                    switching = false;
+                    rows = table.rows;
+                    for (i = 1; i < (rows.length - 1); i++) {
+                        shouldSwitch = false;
+                        x = rows[i].getElementsByTagName("TD")[n];
+                        y = rows[i + 1].getElementsByTagName("TD")[n];
+                        if (dir == "asc") {
+                            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        } else if (dir == "desc") {
+                            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                                shouldSwitch = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (shouldSwitch) {
+                        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                        switching = true;
+                        switchcount++;
+                    } else {
+                        if (switchcount == 0 && dir == "asc") {
+                            dir = "desc";
+                            switching = true;
+                        }
+                    }
+                }
+            }
+            
+            function searchTable() {
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("eventTable");
+            tr = table.getElementsByTagName("tr");
+    
+            for (i = 1; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    
+        function clearSearch() {
+            var input = document.getElementById("searchInput");
+            input.value = "";
+            searchTable();
+        }
+        </script>
+    {% endblock %}
+{% endblock %}
+
+

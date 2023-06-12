@@ -1,0 +1,71 @@
+{% extends "base_layout.html" %}
+
+{% block title_block %}Home{% endblock %}
+
+{% block content_block %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-lg rounded">
+        <div class="card-header bg-primary text-white">
+          <h1 class="display-4 mb-0"><img src="{{ url_for('static', filename='images/home1.png') }}" class="img-fluid" width="100%" alt="Event Image"></h1>
+        </div>
+        <div class="card-body">
+          <h2 class="card-title mb-4">Welcome, {{ current_user.first_name }}!</h2>
+          <p class="lead mb-4">This is your personal event management dashboard. From here, you can manage your events, meetings, tasks and agenda.</p>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="card shadow-sm">
+                <div class="card-header bg-info text-white">
+                  <h3 class="card-title mb-0">UPCOMING EVENTS</h3>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    {% for event in upcoming_events %}
+                    <li class="list-group-item">{{ event.name }}  <br> {{ event.date.strftime('%Y-%m-%d')}} </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card shadow-sm">
+                <div class="card-header bg-warning text-white">
+                  <h3 class="card-title mb-0">UPCOMING MEETINGS</h3>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    <ul class="list-group">
+                      {% for meeting in upcoming_meetings %}
+                        <li class="list-group-item">
+                          {{ meeting.subject }} <br>
+                          {{ meeting.date.strftime('%Y-%m-%d') }} - {{ meeting.time.strftime('%H:%M') }}
+                        </li>
+                      {% endfor %}
+                    </ul>
+                    
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                  <h3 class="card-title mb-0">UPCOMING TASK DEADLINES</h3>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    {% for task in upcoming_tasks %}
+                    <li class="list-group-item">{{ task.data }}  <br> {{ task.deadline.strftime('%Y-%m-%d') }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

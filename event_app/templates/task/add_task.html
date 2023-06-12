@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Event Manager 2023</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/fullcalendar@5.9.0/main.min.css"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">Event Manager 2023</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_home.do_home') }}"><i class="fas fa-home"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_events.do_event_list') }}"><i class="fa fa-light fa-glass-martini"></i> Events</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_meetings.do_meeting_list') }}"><i class="fas fa-users"></i> Meetings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_stakeholders.do_stakeholder_list') }}"><i class="fas fa-user-tie"></i> Stakeholders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_tasks.do_task_list') }}"><i class="far fa-check-square"></i> To do list</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="{{ url_for('bp_calendar.do_calendar') }}"><i class="far fa-calendar-alt"></i> Agenda</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" aria-current="page" 
+              {% if current_user and current_user.is_authenticated %}
+              href="{{ url_for('auth.logout') }}"> Logout <i class="bi bi-box-arrow-right"></i>
+            {% else %}
+              href="{{ url_for('auth.login') }}"><i class="bi bi-box-arrow-in-right"></i> Login
+            {% endif %}
+            </a> 
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  
+    {% block content %}
+    <div class="container">
+      <h1 class="text-center mb-5">Add task</h1>
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <form method="POST" action="{{ url_for('bp_tasks.do_task') }}">
+<div class="form-group">
+    <label for="task">Task:</label>
+    <textarea name="task" id="task" class="form-control" rows="3" placeholder="Add a new task"></textarea>
+</div>
+<div class="form-group">
+  <label for="note">Note:</label>
+  <textarea name="note" id="note" class="form-control" rows="3" placeholder="Add a note"></textarea>
+</div>
+<div class="form-group">
+  <label for="priority">Priority level:</label>
+  <select name="priority" id="priority" class="form-control" required>
+    <option value="">-- Select a priority level --</option>
+    <option value="Urgent">Urgent</option>
+    <option value="High">High</option>
+    <option value="Medium">Medium</option>
+    <option value="Low">Low</option>
+  </select>
+</div>
+<div class="form-group">
+    <label for="deadline">Deadline:</label>
+    <input type="date" name="deadline" id="deadline" class="form-control">
+</div>
+<div class="form-group">
+  <label for="status">Status:</label>
+  <select name="status" id="status" class="form-control" required>
+    <option value="">-- Select a status level --</option>
+    <option value="Not Started">Not Started</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Completed">Completed</option>
+    <option value="On Hold">On Hold</option>
+    <option value="Cancelled">Cancelled</option>
+  </select>
+</div>
+<div align="center">
+    <button type="submit" class="btn btn-primary">Add task</button>
+</div>
+</form>
+</div>
+</div>
+{% block javascript %}
+    <script type="text/javascript">
+        const checkedTaskIds = "{{ checked_task_ids }}".split(',');
+        
+        function deleteTask(taskId) {
+            fetch("/delete-task", {
+                method: "POST",
+                body: JSON.stringify({ taskId: taskId }),
+            }).then((_res) => {
+                window.location.href = "/task-list";
+            });
+        }
+        
+        document.querySelector('form').addEventListener('submit', function(event) {
+            const checkedCheckboxes = document.querySelectorAll('input[name="task_ids[]"]:checked');
+            const checkedIds = Array.from(checkedCheckboxes).map((checkbox) => checkbox.value);
+            document.querySelector('#checked_task_ids').value = checkedIds.join(',');
+        });
+        
+        checkedTaskIds.forEach((taskId) => {
+            const checkbox = document.querySelector(`input[value="${taskId}"]`);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+    </script>
+  
+
+{% endblock %}
+{% endblock %}
