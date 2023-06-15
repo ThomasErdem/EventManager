@@ -12,7 +12,13 @@ bp_tasks = Blueprint('bp_tasks', __name__)
 
 @bp_tasks.route('/task-list', methods=['GET'])
 @login_required
-def do_task_list():
+def do_task_list() -> str:
+    """
+    Retrieves all tasks from the database and generates a task status distribution chart.
+
+    Returns:
+        rendered_template: Rendered HTML template for the task list page.
+    """
     tasks = Task.query.all()
 
     status_counts = {}

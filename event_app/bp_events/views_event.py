@@ -8,7 +8,7 @@ bp_events = Blueprint('bp_events', __name__)
 
 @bp_events.route('/event-list', methods=['GET'])
 @login_required
-def do_event_list():
+def do_event_list() -> str:
     """
     Render the event list page.
 

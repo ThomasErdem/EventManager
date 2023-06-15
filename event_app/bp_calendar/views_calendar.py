@@ -9,7 +9,7 @@ bp_calendar = Blueprint('bp_calendar', __name__)
 
 @bp_calendar.route('/calendar', methods=['GET'])
 @login_required
-def do_calendar():
+def do_calendar() -> str:
     """
     Render the calendar page.
 

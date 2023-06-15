@@ -13,7 +13,7 @@ bp_home = Blueprint('bp_home', __name__, cli_group=None)
 
 @bp_home.route('/')
 @login_required
-def do_home():
+def do_home() -> str:
     # get the current date and time
     current_datetime = datetime.now()
 

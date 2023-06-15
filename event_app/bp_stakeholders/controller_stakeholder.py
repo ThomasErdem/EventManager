@@ -8,7 +8,7 @@ from .views_stakeholder import bp_stakeholders
 
 @bp_stakeholders.route('/Stakeholders', methods=['GET', 'POST'])
 @login_required
-def do_stakeholder():
+def do_stakeholder() -> str:
     """
     Handle stakeholder creation and update requests.
     Render the stakeholder page with a list of stakeholders.
@@ -51,7 +51,7 @@ def do_stakeholder():
 
 @bp_stakeholders.route('/delete-stakeholder', methods=['POST'])
 @login_required
-def delete_stakeholder():
+def delete_stakeholder() -> jsonify:
     """
     Handle stakeholder deletion request.
 
@@ -71,7 +71,7 @@ def delete_stakeholder():
 
 @bp_stakeholders.route('/update-stakeholder/<int:stakeholder_id>', methods=['GET', 'POST'])
 @login_required
-def update_stakeholder(stakeholder_id):
+def update_stakeholder(stakeholder_id) -> redirect:
     """
     Handle stakeholder update request.
 

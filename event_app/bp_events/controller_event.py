@@ -8,7 +8,7 @@ from .views_event import bp_events
 
 @bp_events.route('/add-events', methods=['GET', 'POST'])
 @login_required
-def do_event():
+def do_event() -> str:
     """
     renders the add_event template
     add new events to the app
@@ -63,7 +63,7 @@ def do_event():
     events = Event.query.filter_by(user_id=current_user.id).order_by(Event.date.desc()).all()
     return render_template("event/add_event.html", user=current_user, events=events)
 
-def get_events():
+def get_events() -> list:
     """
     retrieve all events from database
     """
@@ -85,7 +85,7 @@ def get_events():
 
 @bp_events.route('/delete-event', methods=['GET', 'POST'])
 @login_required
-def delete_event():
+def delete_event() -> jsonify:
     """
     deletes events from database
     """
@@ -101,7 +101,7 @@ def delete_event():
 
 @bp_events.route('/update-event/<int:event_id>', methods=['GET', 'POST'])
 @login_required
-def update_event(event_id):
+def update_event(event_id) -> redirect:
     # Retrieve the meeting from the database
     event = Event.query.get(event_id)
 

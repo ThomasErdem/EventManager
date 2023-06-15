@@ -10,6 +10,6 @@ bp_meetings = Blueprint('bp_meetings', __name__)
 
 @bp_meetings.route('/meeting-list', methods=['GET'])
 @login_required
-def do_meeting_list():
+def do_meeting_list() -> str:
     meetings = Meeting.query.all()
     return render_template('meeting/meeting_list.html', meetings=meetings, datetime=datetime, user=current_user)

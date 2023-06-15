@@ -10,7 +10,7 @@ from .views_meeting import bp_meetings
 
 @bp_meetings.route('/add-meeting', methods=['GET', 'POST'])
 @login_required
-def do_meeting():
+def do_meeting() -> str:
     if request.method == 'POST':
         meeting_id = request.form.get('meeting_id')
         meeting_subject = request.form.get('subject')
@@ -48,7 +48,7 @@ def do_meeting():
 
 @bp_meetings.route('/delete-meeting', methods=['POST'])
 @login_required
-def delete_meeting():
+def delete_meeting() -> jsonify:
     meeting = json.loads(request.data)
     meetingId = meeting['meetingId']
     meeting = Meeting.query.get(meetingId)
@@ -61,7 +61,7 @@ def delete_meeting():
 
 @bp_meetings.route('/update-meeting/<int:meeting_id>', methods=['GET', 'POST'])
 @login_required
-def update_meeting(meeting_id):
+def update_meeting(meeting_id) -> redirect:
     # Retrieve the meeting from the database
     meeting = Meeting.query.get(meeting_id)
 
@@ -91,7 +91,7 @@ def update_meeting(meeting_id):
 
 
 
-def get_meetings():
+def get_meetings() -> list:
     meetings = Meeting.query.all()
     meeting_list = []
     for meeting in meetings:

@@ -8,7 +8,7 @@ from .views_task import bp_tasks
 
 @bp_tasks.route('/add-task', methods=['GET', 'POST'])
 @login_required
-def do_task():
+def do_task() -> str:
     """
     Handle task creation and update requests.
     Render the task page with a list of tasks.
@@ -56,7 +56,7 @@ def do_task():
     return render_template("task/add_task.html", user=current_user, tasks=tasks)
 
 
-def get_tasks():
+def get_tasks() -> list:
     """
     Get a list of all tasks.
 
@@ -77,7 +77,7 @@ def get_tasks():
 
 @bp_tasks.route('/delete-task', methods=['POST'])
 @login_required
-def delete_task():
+def delete_task() -> jsonify:
     """
     Handle task deletion request.
 
@@ -97,7 +97,7 @@ def delete_task():
 
 @bp_tasks.route('/update-task/<int:task_id>', methods=['GET', 'POST'])
 @login_required
-def update_task(task_id):
+def update_task(task_id) -> redirect:
     """
     Handle task update request.
 
