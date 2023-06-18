@@ -12,6 +12,6 @@ class Event(db.Model):
     location = db.Column(db.String(100), nullable=False)
     budget = db.Column(db.Float, nullable=False)
     date = db.Column(db.Date, nullable=False)
-    program = db.Column(db.String(50000), nullable=False)
+    program = db.Column(db.Text, nullable=False)
     category = db.Column(db.String(30))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))

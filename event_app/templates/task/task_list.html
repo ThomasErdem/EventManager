@@ -100,6 +100,104 @@
     {% block javascript %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="text/javascript">
+        const checkedTaskIds = "{{ checked_task_ids }}".split(',');
+
+        function deleteTask(taskId) {
+            fetch("/delete-task", {
+            method: "POST",
+            body: JSON.stringify({ taskId: taskId }),
+                }).then((_res) => {
+                // Update the chart by making an AJAX request to get updated data
+                fetch("/get-chart-data")
+                    .then((response) => response.json())
+                    .then((chartData) => {
+                    generateChart(chartData);
+            });
+
+        window.location.href = "/task-list";
+    });
+}
+
+document.querySelector('form').addEventListener('submit', function (event) {
+    const checkedCheckboxes = document.querySelectorAll('input[name="task_ids[]"]:checked');
+    const checkedIds = Array.from(checkedCheckboxes).map((checkbox) => checkbox.value);
+    document.querySelector('#checked_task_ids').value = checkedIds.join(',');
+});
+
+checkedTaskIds.forEach((taskId) => {
+    const checkbox = document.querySelector(`input[value="${taskId}"]`);
+    if (checkbox) {
+        checkbox.checked = true;
+    }
+});
+
+function sortTable(n) {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("taskTable");
+    switching = true;
+    dir = "asc";
+    while (switching) {
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount++;
+        } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+
+function searchTable() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("taskTable");
+    tr = table.getElementsByTagName("tr");
+
+    for (i = 1; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+function clearSearch() {
+    var input = document.getElementById("searchInput");
+    input.value = "";
+    searchTable();
+}
+
+
+
+
+
         // Function to display the base64 encoded chart image
         function displayChart(chartBase64) {
             var chartContainer = document.getElementById('chartContainer');
@@ -183,6 +281,8 @@
             .then((chartData) => {
                 generateChart(chartData);
             });
+
+
     </script>
 {% endblock %}
 
