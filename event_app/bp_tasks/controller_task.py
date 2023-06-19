@@ -122,7 +122,7 @@ def update_task(task_id) -> redirect:
 
                 db.session.commit()
                 flash('Task updated successfully', 'success')
-                return redirect(url_for('views.do_task_list'))
+                return redirect(url_for('bp_tasks.do_task_list'))
 
             return render_template('task/update_task.html', task=task)
         else:
@@ -130,4 +130,4 @@ def update_task(task_id) -> redirect:
     else:
         flash('Task not found', 'error')
 
-    return redirect(url_for('views.do_task_list'))
+    return redirect(url_for('bp_tasks.do_task_list'))

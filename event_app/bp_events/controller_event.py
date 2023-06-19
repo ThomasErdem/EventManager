@@ -119,7 +119,7 @@ def update_event(event_id) -> redirect:
 
                 db.session.commit()
                 flash('Event updated successfully', 'success')
-                return redirect(url_for('views.do_event_list'))
+                return redirect(url_for('bp_events.do_event_list'))
 
             return render_template('event/update_event.html', event=event)
         else:
@@ -127,4 +127,4 @@ def update_event(event_id) -> redirect:
     else:
         flash('Event not found', 'error')
 
-    return redirect(url_for('views.do_event_list'))
+    return redirect(url_for('bp_events.do_event_list'))

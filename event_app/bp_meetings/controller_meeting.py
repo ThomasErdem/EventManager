@@ -77,7 +77,7 @@ def update_meeting(meeting_id) -> redirect:
 
                 db.session.commit()
                 flash('Meeting updated successfully', 'success')
-                return redirect(url_for('views.do_meeting_list'))
+                return redirect(url_for('bp_meetings.do_meeting_list'))
 
             return render_template('meeting/update_meeting.html', meeting=meeting)
         else:
@@ -85,7 +85,7 @@ def update_meeting(meeting_id) -> redirect:
     else:
         flash('Meeting not found', 'error')
 
-    return redirect(url_for('views.do_meeting_list'))
+    return redirect(url_for('bp_meetings.do_meeting_list'))
 
 
 
